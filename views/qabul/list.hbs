@@ -1,0 +1,31 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">Qabul vaqtlari</h1>
+  <a class="btn" href="/qabul/new">+ Yangi</a>
+</div>
+
+<div class="card scroll">
+  {{#if qabullar.length}}
+  <table>
+    <thead><tr><th>Kun</th><th>Boshlanishi</th><th>Tugashi</th><th>O'qituvchilar</th><th>Dekanat</th><th></th></tr></thead>
+    <tbody>
+      {{#each qabullar}}
+      <tr>
+        <td>{{kun week_date}}</td>
+        <td>{{time start_time}}</td>
+        <td>{{time end_time}}</td>
+        <td>{{teacher_soni}}</td>
+        <td>{{dekanat_soni}}</td>
+        <td>
+          <a class="btn ghost sm" href="/qabul/{{id}}/edit">Tahrirlash</a>
+          <form class="inline" method="post" action="/qabul/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi? Biriktirilgan xodimlarda qabul vaqti bo\'sh qoladi.')">
+            <button class="btn danger sm">O'chirish</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">Hozircha qabul vaqti yo'q.</p>
+  {{/if}}
+</div>

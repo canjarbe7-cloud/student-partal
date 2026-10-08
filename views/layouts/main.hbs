@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}} · Student Portal</title>
+  <style>
+    :root { --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --text:#1d2430; --muted:#6b7480; --accent:#2f5bd8; --danger:#c0392b; --ok:#1e8e5a; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--text); }
+    header { background:var(--card); border-bottom:1px solid var(--line); padding:12px 16px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+    header a { color:var(--text); text-decoration:none; font-weight:500; }
+    header .brand { font-weight:700; color:var(--accent); }
+    header .spacer { flex:1; }
+    main { max-width:1100px; margin:24px auto; padding:0 16px; }
+    h1 { font-size:22px; margin:0 0 16px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+    .scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+    th { color:var(--muted); font-weight:600; font-size:13px; }
+    label { display:block; font-size:13px; color:var(--muted); margin-bottom:4px; }
+    input, select { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+    input[type=checkbox] { width:auto; }
+    .btn { display:inline-block; padding:8px 14px; border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:6px; text-decoration:none; font:inherit; cursor:pointer; }
+    .btn.ghost { background:transparent; color:var(--accent); }
+    .btn.danger { background:transparent; border-color:var(--danger); color:var(--danger); }
+    .btn.sm { padding:4px 10px; font-size:13px; }
+    form.inline { display:inline; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:99px; font-size:12px; background:#eef1f6; }
+    .badge.on { background:#e3f5ec; color:var(--ok); }
+    .badge.off { background:#fbe9e7; color:var(--danger); }
+    .errors { background:#fbe9e7; border:1px solid #f1c4bd; color:var(--danger); border-radius:6px; padding:10px 14px; margin-bottom:16px; }
+    .errors ul { margin:0; padding-left:18px; }
+    .muted { color:var(--muted); }
+    .stat b { display:block; font-size:26px; }
+    dl { display:grid; grid-template-columns:160px 1fr; gap:6px 12px; margin:0; }
+    dt { color:var(--muted); } dd { margin:0; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+  {{#if me}}
+  <header>
+    <a class="brand" href="/">Student Portal</a>
+    {{#if isStaff}}
+      <a href="/users">Foydalanuvchilar</a>
+      <a href="/qabul">Qabul vaqtlari</a>
+    {{/if}}
+    <span class="spacer"></span>
+    <span class="muted">{{me.familiya}} {{me.ism}} · {{rol me.role}}</span>
+    <form class="inline" method="post" action="/logout"><button class="btn ghost sm">Chiqish</button></form>
+  </header>
+  {{/if}}
+  <main>
+    {{{body}}}
+  </main>
+</body>
+</html>

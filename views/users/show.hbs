@@ -1,0 +1,26 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">{{fio user}}</h1>
+  <div class="row">
+    <a class="btn ghost" href="/users">← Ro'yxat</a>
+    <a class="btn" href="/users/{{user.id}}/edit">Tahrirlash</a>
+  </div>
+</div>
+
+<div class="card">
+  <dl>
+    <dt>ID</dt><dd>{{user.id}}</dd>
+    <dt>Login</dt><dd>{{user.login}}</dd>
+    <dt>Rol</dt><dd><span class="badge">{{rol user.role}}</span></dd>
+    <dt>Telefon</dt><dd>{{or user.phone "—"}}</dd>
+    <dt>Holat</dt><dd><span class="badge {{#if user.status}}on{{else}}off{{/if}}">{{#if user.status}}Faol{{else}}Bloklangan{{/if}}</span></dd>
+    <dt>Telegram ID</dt><dd>{{or user.tg_user "—"}}</dd>
+    {{#if (eq user.role "student")}}
+      <dt>Guruh</dt><dd>{{or user.guruh "—"}}</dd>
+      <dt>Kurs</dt><dd>{{or user.kurs "—"}}</dd>
+    {{/if}}
+    {{#if (eq user.role "dekanat")}}<dt>Lavozim</dt><dd>{{or user.lavozim "—"}}</dd>{{/if}}
+    {{#if user.qabul_vaqti}}<dt>Qabul vaqti</dt><dd>{{qabul user}}</dd>{{/if}}
+    <dt>Yaratilgan</dt><dd>{{user.created_at}}</dd>
+    <dt>Yangilangan</dt><dd>{{user.updated_at}}</dd>
+  </dl>
+</div>

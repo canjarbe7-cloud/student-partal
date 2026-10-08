@@ -1,0 +1,57 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">Foydalanuvchilar</h1>
+  <a class="btn" href="/users/new{{#if role}}?role={{role}}{{/if}}">+ Yangi</a>
+</div>
+
+<form class="card row" method="get" action="/users">
+  <div style="flex:1; min-width:180px"><input name="q" value="{{q}}" placeholder="Ism, familiya, login yoki telefon"></div>
+  <div style="min-width:160px">
+    <select name="role">
+      <option value="">Barcha rollar</option>
+      {{#each roles}}<option value="{{this}}" {{#if (eq this ../role)}}selected{{/if}}>{{rol this}}</option>{{/each}}
+    </select>
+  </div>
+  <button class="btn ghost">Qidirish</button>
+</form>
+
+<div class="card scroll">
+  {{#if users.length}}
+  <table>
+    <thead>
+      <tr><th>ID</th><th>F.I.O.</th><th>Login</th><th>Rol</th><th>Telefon</th><th>Qo'shimcha</th><th>Holat</th><th></th></tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>{{id}}</td>
+        <td><a href="/users/{{id}}">{{fio this}}</a></td>
+        <td>{{login}}</td>
+        <td><span class="badge">{{rol role}}</span></td>
+        <td>{{or phone "—"}}</td>
+        <td>
+          {{#if (eq role "student")}}Guruh {{or guruh "—"}}, {{or kurs "—"}}-kurs{{/if}}
+          {{#if (eq role "teacher")}}{{qabul this}}{{/if}}
+          {{#if (eq role "dekanat")}}Lavozim {{or lavozim "—"}} · {{qabul this}}{{/if}}
+        </td>
+        <td>
+          <form class="inline" method="post" action="/users/{{id}}/status">
+            <input type="hidden" name="status" value="{{#if status}}false{{else}}true{{/if}}">
+            <button class="badge {{#if status}}on{{else}}off{{/if}}" style="border:0;cursor:pointer" title="Holatni almashtirish">
+              {{#if status}}Faol{{else}}Bloklangan{{/if}}
+            </button>
+          </form>
+        </td>
+        <td>
+          <a class="btn ghost sm" href="/users/{{id}}/edit">Tahrirlash</a>
+          <form class="inline" method="post" action="/users/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi?')">
+            <button class="btn danger sm">O'chirish</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">Hech narsa topilmadi.</p>
+  {{/if}}
+</div>

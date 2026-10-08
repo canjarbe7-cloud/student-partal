@@ -1,0 +1,20 @@
+<h1>{{#if isNew}}Yangi qabul vaqti{{else}}Qabul vaqtini tahrirlash{{/if}}</h1>
+{{> errors}}
+
+<form class="card" method="post" action="{{#if isNew}}/qabul{{else}}/qabul/{{item.id}}{{/if}}">
+  <div class="grid">
+    <div>
+      <label for="week_date">Hafta kuni</label>
+      <select id="week_date" name="week_date" required>
+        <option value="">— tanlang —</option>
+        {{#each kunlar}}<option value="{{id}}" {{#if (eq id ../item.week_date)}}selected{{/if}}>{{nom}}</option>{{/each}}
+      </select>
+    </div>
+    <div><label for="start_time">Boshlanishi</label><input id="start_time" name="start_time" type="time" value="{{time item.start_time}}" required></div>
+    <div><label for="end_time">Tugashi</label><input id="end_time" name="end_time" type="time" value="{{time item.end_time}}" required></div>
+  </div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn">Saqlash</button>
+    <a class="btn ghost" href="/qabul">Bekor qilish</a>
+  </div>
+</form>

@@ -1,0 +1,51 @@
+<h1>Xush kelibsiz, {{profil.ism}}</h1>
+
+{{#if isStaff}}
+<div class="grid">
+  <a class="card stat" href="/users?role=student" style="text-decoration:none;color:inherit"><b>{{or soni.student 0}}</b>Talabalar</a>
+  <a class="card stat" href="/users?role=teacher" style="text-decoration:none;color:inherit"><b>{{or soni.teacher 0}}</b>O'qituvchilar</a>
+  <a class="card stat" href="/users?role=dekanat" style="text-decoration:none;color:inherit"><b>{{or soni.dekanat 0}}</b>Dekanat xodimlari</a>
+</div>
+{{/if}}
+
+<div class="card">
+  <h2 style="margin-top:0;font-size:17px">Mening ma'lumotlarim</h2>
+  <dl>
+    <dt>F.I.O.</dt><dd>{{fio profil}}</dd>
+    <dt>Login</dt><dd>{{profil.login}}</dd>
+    <dt>Telefon</dt><dd>{{or profil.phone "—"}}</dd>
+    {{#if (eq profil.role "student")}}
+      <dt>Guruh</dt><dd>{{or profil.guruh "—"}}</dd>
+      <dt>Kurs</dt><dd>{{or profil.kurs "—"}}</dd>
+    {{/if}}
+    {{#if (eq profil.role "teacher")}}<dt>Qabul vaqtim</dt><dd>{{qabul profil}}</dd>{{/if}}
+    {{#if (eq profil.role "dekanat")}}
+      <dt>Lavozim</dt><dd>{{or profil.lavozim "—"}}</dd>
+      <dt>Qabul vaqtim</dt><dd>{{qabul profil}}</dd>
+    {{/if}}
+  </dl>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;font-size:17px">Qabul jadvali</h2>
+  {{#if jadval.length}}
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Kun</th><th>Vaqt</th><th>F.I.O.</th><th>Kim</th><th>Telefon</th></tr></thead>
+      <tbody>
+        {{#each jadval}}
+        <tr>
+          <td>{{kun week_date}}</td>
+          <td>{{time start_time}}–{{time end_time}}</td>
+          <td>{{fio this}}</td>
+          <td>{{rol role}}</td>
+          <td>{{or phone "—"}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <p class="muted">Hozircha qabul vaqtlari belgilanmagan.</p>
+  {{/if}}
+</div>

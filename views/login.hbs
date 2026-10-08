@@ -1,0 +1,9 @@
+<div class="card" style="max-width:380px; margin:60px auto;">
+  <h1>Tizimga kirish</h1>
+  {{#if error}}<div class="errors">{{error}}</div>{{/if}}
+  <form method="post" action="/login">
+    <p><label for="login">Login</label><input id="login" name="login" value="{{login}}" required autofocus></p>
+    <p><label for="parol">Parol</label><input id="parol" name="parol" type="password" required></p>
+    <button class="btn" style="width:100%">Kirish</button>
+  </form>
+</div>

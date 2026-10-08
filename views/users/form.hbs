@@ -1,0 +1,64 @@
+<h1>{{title}}</h1>
+{{> errors}}
+
+<form class="card" method="post" action="{{#if isNew}}/users{{else}}/users/{{user.id}}{{/if}}">
+  <div class="grid">
+    <div><label for="familiya">Familiya</label><input id="familiya" name="familiya" value="{{user.familiya}}" required></div>
+    <div><label for="ism">Ism</label><input id="ism" name="ism" value="{{user.ism}}" required></div>
+    <div><label for="ochestva">Otasining ismi</label><input id="ochestva" name="ochestva" value="{{user.ochestva}}"></div>
+    <div><label for="phone">Telefon</label><input id="phone" name="phone" value="{{user.phone}}" placeholder="+998901234567"></div>
+    <div><label for="login">Login</label><input id="login" name="login" value="{{user.login}}" required autocomplete="off"></div>
+    <div>
+      <label for="parol">Parol {{#unless isNew}}(o'zgartirmaslik uchun bo'sh qoldiring){{/unless}}</label>
+      <input id="parol" name="parol" type="password" minlength="6" autocomplete="new-password" {{#if isNew}}required{{/if}}>
+    </div>
+    <div>
+      <label for="role">Rol</label>
+      <select id="role" name="role">
+        {{#each roles}}<option value="{{this}}" {{#if (eq this ../user.role)}}selected{{/if}}>{{rol this}}</option>{{/each}}
+      </select>
+    </div>
+    <div data-for="student teacher dekanat"><label for="tg_user">Telegram ID</label>
+      <input id="tg_user" name="tg_user" inputmode="numeric" value="{{user.tg_user}}"></div>
+
+    {{! student_info }}
+    <div data-for="student"><label for="guruh">Guruh (raqam)</label><input id="guruh" name="guruh" inputmode="numeric" value="{{user.guruh}}"></div>
+    <div data-for="student"><label for="kurs">Kurs</label><input id="kurs" name="kurs" type="number" min="1" max="6" value="{{user.kurs}}"></div>
+
+    {{! dekanat_user_info }}
+    <div data-for="dekanat"><label for="lavozim">Lavozim (kod)</label><input id="lavozim" name="lavozim" inputmode="numeric" value="{{user.lavozim}}"></div>
+
+    {{! teacher_info va dekanat_user_info -> qabul_vaqti }}
+    <div data-for="teacher dekanat">
+      <label for="qabul_vaqti">Qabul vaqti</label>
+      <select id="qabul_vaqti" name="qabul_vaqti">
+        <option value="">— belgilanmagan —</option>
+        {{#each qabullar}}<option value="{{id}}" {{#if (eq id ../user.qabul_vaqti)}}selected{{/if}}>{{qabul this}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <p><label style="display:inline"><input type="checkbox" name="status" {{#if user.status}}checked{{/if}}> Faol</label></p>
+
+  <div class="row">
+    <button class="btn">Saqlash</button>
+    <a class="btn ghost" href="{{#if isNew}}/users{{else}}/users/{{user.id}}{{/if}}">Bekor qilish</a>
+  </div>
+</form>
+
+<script>
+  // Tanlangan rolga mos maydonlarni ko'rsatadi; yashirin maydonlar serverga yuborilmaydi
+  (function () {
+    var role = document.getElementById('role');
+    function sync() {
+      document.querySelectorAll('[data-for]').forEach(function (el) {
+        var show = el.dataset.for.split(' ').indexOf(role.value) !== -1;
+        el.hidden = !show;
+        var inputs = el.matches('input,select') ? [el] : el.querySelectorAll('input,select');
+        inputs.forEach(function (i) { i.disabled = !show; });
+      });
+    }
+    role.addEventListener('change', sync);
+    sync();
+  })();
+</script>
