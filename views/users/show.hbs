@@ -13,7 +13,7 @@
     <dt>Rol</dt><dd><span class="badge">{{rol user.role}}</span></dd>
     <dt>Telefon</dt><dd>{{or user.phone "—"}}</dd>
     <dt>Holat</dt><dd><span class="badge {{#if user.status}}on{{else}}off{{/if}}">{{#if user.status}}Faol{{else}}Bloklangan{{/if}}</span></dd>
-    <dt>Telegram ID</dt><dd>{{or user.tg_user "—"}}</dd>
+    <dt>Telegram</dt><dd>{{or user.tg_user "—"}}</dd>
     {{#if (eq user.role "student")}}
       <dt>Guruh</dt><dd>{{or user.guruh "—"}}</dd>
       <dt>Kurs</dt><dd>{{or user.kurs "—"}}</dd>

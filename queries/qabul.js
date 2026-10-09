@@ -41,7 +41,7 @@ async function remove(id) {
 async function schedule() {
   const r = await db.query(`
     SELECT q.week_date, q.start_time, q.end_time,
-           u.ism, u.familiya, u.ochestva, u.phone, 'teacher' AS role, NULL::bigint AS lavozim
+           u.ism, u.familiya, u.ochestva, u.phone, 'teacher' AS role, NULL::varchar AS lavozim
       FROM teacher_info t
       JOIN users u       ON u.id = t.user_id AND u.status
       JOIN qabul_vaqti q ON q.id = t.qabul_vaqti

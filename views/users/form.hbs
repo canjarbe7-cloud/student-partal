@@ -18,15 +18,15 @@
         {{#each roles}}<option value="{{this}}" {{#if (eq this ../user.role)}}selected{{/if}}>{{rol this}}</option>{{/each}}
       </select>
     </div>
-    <div data-for="student teacher dekanat"><label for="tg_user">Telegram ID</label>
-      <input id="tg_user" name="tg_user" inputmode="numeric" value="{{user.tg_user}}"></div>
+    <div data-for="student teacher dekanat"><label for="tg_user">Telegram (username yoki ID)</label>
+      <input id="tg_user" name="tg_user" maxlength="100" value="{{user.tg_user}}" placeholder="@username yoki 123456789"></div>
 
     {{! student_info }}
-    <div data-for="student"><label for="guruh">Guruh (raqam)</label><input id="guruh" name="guruh" inputmode="numeric" value="{{user.guruh}}"></div>
+    <div data-for="student"><label for="guruh">Guruh</label><input id="guruh" name="guruh" maxlength="100" value="{{user.guruh}}" placeholder="101-A"></div>
     <div data-for="student"><label for="kurs">Kurs</label><input id="kurs" name="kurs" type="number" min="1" max="6" value="{{user.kurs}}"></div>
 
     {{! dekanat_user_info }}
-    <div data-for="dekanat"><label for="lavozim">Lavozim (kod)</label><input id="lavozim" name="lavozim" inputmode="numeric" value="{{user.lavozim}}"></div>
+    <div data-for="dekanat"><label for="lavozim">Lavozim</label><input id="lavozim" name="lavozim" maxlength="100" value="{{user.lavozim}}" placeholder="Dekan o'rinbosari"></div>
 
     {{! teacher_info va dekanat_user_info -> qabul_vaqti }}
     <div data-for="teacher dekanat">

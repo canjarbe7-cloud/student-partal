@@ -27,10 +27,10 @@ function parseForm(body, { isNew }) {
     role: str(body.role),
     phone: str(body.phone),
     status: body.status === 'on' || body.status === 'true',
-    guruh: num(body.guruh),
+    guruh: str(body.guruh),
     kurs: num(body.kurs),
-    lavozim: num(body.lavozim),
-    tg_user: num(body.tg_user),
+    lavozim: str(body.lavozim),
+    tg_user: str(body.tg_user),
     qabul_vaqti: num(body.qabul_vaqti),
   };
   const errors = [];
@@ -40,11 +40,11 @@ function parseForm(body, { isNew }) {
   if (isNew && !d.parol) errors.push('Parol kiritilmagan');
   if (d.parol && d.parol.length < 6) errors.push("Parol kamida 6 belgidan iborat bo'lsin");
   if (!ROLES.includes(d.role)) errors.push("Rol noto'g'ri");
-  for (const k of ['ism', 'familiya', 'ochestva', 'login']) {
+  for (const k of ['ism', 'familiya', 'ochestva', 'login', 'guruh', 'lavozim', 'tg_user']) {
     if (d[k] && d[k].length > 100) errors.push(`${k}: 100 belgidan oshmasin`);
   }
   if (d.phone && d.phone.length > 20) errors.push('Telefon 20 belgidan oshmasin');
-  for (const k of ['guruh', 'kurs', 'lavozim', 'tg_user', 'qabul_vaqti']) {
+  for (const k of ['kurs', 'qabul_vaqti']) {
     if (Number.isNaN(d[k])) errors.push(`${k}: butun son bo'lishi kerak`);
   }
   if (d.role === 'student' && d.kurs !== null && !(d.kurs >= 1 && d.kurs <= 6)) {

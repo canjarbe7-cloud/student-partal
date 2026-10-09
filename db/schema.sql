@@ -29,25 +29,32 @@ CREATE TABLE IF NOT EXISTS qabul_vaqti (
 CREATE TABLE IF NOT EXISTS student_info (
   id       BIGSERIAL PRIMARY KEY,
   user_id  BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-  guruh    BIGINT,
+  guruh    VARCHAR(100),                       -- matn yoki raqam: "101-A", "24"
   kurs     BIGINT CHECK (kurs BETWEEN 1 AND 6),
-  tg_user  BIGINT
+  tg_user  VARCHAR(100)                        -- @username yoki raqamli ID
 );
 
 CREATE TABLE IF NOT EXISTS teacher_info (
   id           BIGSERIAL PRIMARY KEY,
   user_id      BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-  tg_user      BIGINT,
+  tg_user      VARCHAR(100),
   qabul_vaqti  BIGINT REFERENCES qabul_vaqti(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS dekanat_user_info (
   id           BIGSERIAL PRIMARY KEY,
   user_id      BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-  lavozim      BIGINT,
-  tg_user      BIGINT,
+  lavozim      VARCHAR(100),
+  tg_user      VARCHAR(100),
   qabul_vaqti  BIGINT REFERENCES qabul_vaqti(id) ON DELETE SET NULL
 );
+
+-- Eski bazalarda bu ustunlar BIGINT edi -> matn ham, raqam ham sig'adigan qilamiz
+ALTER TABLE student_info      ALTER COLUMN guruh   TYPE VARCHAR(100) USING guruh::varchar;
+ALTER TABLE student_info      ALTER COLUMN tg_user TYPE VARCHAR(100) USING tg_user::varchar;
+ALTER TABLE teacher_info      ALTER COLUMN tg_user TYPE VARCHAR(100) USING tg_user::varchar;
+ALTER TABLE dekanat_user_info ALTER COLUMN lavozim TYPE VARCHAR(100) USING lavozim::varchar;
+ALTER TABLE dekanat_user_info ALTER COLUMN tg_user TYPE VARCHAR(100) USING tg_user::varchar;
 
 CREATE INDEX IF NOT EXISTS idx_users_role          ON users(role);
 CREATE INDEX IF NOT EXISTS idx_teacher_qabul       ON teacher_info(qabul_vaqti);
