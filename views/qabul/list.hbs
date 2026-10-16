@@ -1,23 +1,43 @@
 <div class="row" style="justify-content:space-between; margin-bottom:16px">
   <h1 style="margin:0">Qabul vaqtlari</h1>
-  <a class="btn" href="/qabul/new">+ Yangi</a>
+  <div class="row">
+    <a class="btn ghost" href="/qabul/istisno{{#if xodimId}}?xodim={{xodimId}}{{/if}}">Qabul bo'lmaydigan kunlar</a>
+    <a class="btn" href="/qabul/new{{#if xodimId}}?xodim={{xodimId}}{{/if}}">+ Yangi</a>
+  </div>
 </div>
+
+{{#if xodimlar.length}}
+<form class="card row" method="get" action="/qabul">
+  <div style="flex:1; min-width:220px">
+    <select name="xodim">
+      <option value="">Barcha xodimlar</option>
+      {{#each xodimlar}}<option value="{{id}}" {{#if (eq id ../xodimId)}}selected{{/if}}>{{fio this}} · {{rol role}}</option>{{/each}}
+    </select>
+  </div>
+  <button class="btn ghost">Ko'rsatish</button>
+</form>
+{{/if}}
 
 <div class="card scroll">
   {{#if qabullar.length}}
   <table>
-    <thead><tr><th>Kun</th><th>Boshlanishi</th><th>Tugashi</th><th>O'qituvchilar</th><th>Dekanat</th><th></th></tr></thead>
+    <thead>
+      <tr><th>Xodim</th><th>Kun</th><th>Vaqt</th><th>Bo'lim</th><th>Navbat</th><th>Kunlik chegara</th><th>Kelgusi navbatlar</th><th>Holat</th><th></th></tr>
+    </thead>
     <tbody>
       {{#each qabullar}}
       <tr>
-        <td>{{kun week_date}}</td>
-        <td>{{time start_time}}</td>
-        <td>{{time end_time}}</td>
-        <td>{{teacher_soni}}</td>
-        <td>{{dekanat_soni}}</td>
+        <td>{{fio this}}<br><span class="muted">{{rol role}}</span></td>
+        <td>{{kun hafta_kuni}}</td>
+        <td>{{time start_time}}–{{time end_time}}</td>
+        <td>{{or bolim_nomi "—"}}</td>
+        <td>{{slot_min}} daq.</td>
+        <td>{{or max_navbat "—"}}</td>
+        <td>{{navbat_soni}}</td>
+        <td><span class="badge {{#if status}}on{{else}}off{{/if}}">{{#if status}}Faol{{else}}To'xtatilgan{{/if}}</span></td>
         <td>
           <a class="btn ghost sm" href="/qabul/{{id}}/edit">Tahrirlash</a>
-          <form class="inline" method="post" action="/qabul/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi? Biriktirilgan xodimlarda qabul vaqti bo\'sh qoladi.')">
+          <form class="inline" method="post" action="/qabul/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi? Shu qabulga yozilgan barcha navbatlar ham o\'chadi. Vaqtincha to\'xtatish uchun Tahrirlash orqali Faol belgisini olib tashlang.')">
             <button class="btn danger sm">O'chirish</button>
           </form>
         </td>
@@ -26,6 +46,6 @@
     </tbody>
   </table>
   {{else}}
-  <p class="muted">Hozircha qabul vaqti yo'q.</p>
+  <p class="muted" style="margin:0">Hozircha qabul vaqti yo'q.</p>
   {{/if}}
 </div>

@@ -4,7 +4,7 @@
 </div>
 
 <form class="card row" method="get" action="/users">
-  <div style="flex:1; min-width:180px"><input name="q" value="{{q}}" placeholder="Ism, familiya, login yoki telefon"></div>
+  <div style="flex:1; min-width:180px"><input name="q" value="{{q}}" placeholder="Ism, familiya, login, telefon yoki guruh"></div>
   <div style="min-width:160px">
     <select name="role">
       <option value="">Barcha rollar</option>
@@ -30,8 +30,9 @@
         <td>{{or phone "—"}}</td>
         <td>
           {{#if (eq role "student")}}Guruh {{or guruh "—"}}, {{or kurs "—"}}-kurs{{/if}}
-          {{#if (eq role "teacher")}}{{qabul this}}{{/if}}
-          {{#if (eq role "dekanat")}}Lavozim {{or lavozim "—"}} · {{qabul this}}{{/if}}
+          {{#if (eq role "dekanat")}}{{or lavozim "—"}}{{/if}}
+          {{#if (eq role "tyutor")}}Guruhlar: {{or guruhlar "—"}}{{/if}}
+          {{#if bolimlar}}{{#unless (eq role "student")}}<span class="muted">{{bolimlar}}</span>{{/unless}}{{/if}}
         </td>
         <td>
           <form class="inline" method="post" action="/users/{{id}}/status">

@@ -1,0 +1,60 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">Navbatlarim</h1>
+  <a class="btn" href="/navbat/yangi">+ Navbatga yozilish</a>
+</div>
+
+<div class="card scroll">
+  <h2>Kelgusi navbatlar</h2>
+  {{#if kelgusi.length}}
+  <table>
+    <thead><tr><th>Sana</th><th>Vaqt</th><th>№</th><th>Kimga</th><th>Qayerda</th><th>Murojaat</th><th>Holat</th><th></th></tr></thead>
+    <tbody>
+      {{#each kelgusi}}
+      <tr>
+        <td>{{sana sana}}<br><span class="muted">{{sanaKun sana}}</span></td>
+        <td>{{time boshlanish}}–{{time tugash}}</td>
+        <td>{{navbat_raqami}}</td>
+        <td>{{fio xodim}}<br><span class="muted">{{rol xodim.role}}</span></td>
+        <td>{{or bolim_nomi "—"}}{{#if xona}}<br><span class="muted">{{xona}}-xona</span>{{/if}}</td>
+        <td class="wrap">{{#if murojaat}}<b>{{murojaat}}</b><br>{{/if}}{{or mavzu ""}}</td>
+        <td>
+          <span class="badge s-{{status}}">{{holat status}}</span>
+          {{#if javob_izoh}}<br><span class="muted">{{javob_izoh}}</span>{{/if}}
+        </td>
+        <td>
+          {{#if bekorQilsaBoladi}}
+          <form class="inline" method="post" action="/navbat/{{id}}/bekor" onsubmit="return confirm('Navbat bekor qilinsinmi?')">
+            <button class="btn danger sm">Bekor qilish</button>
+          </form>
+          {{/if}}
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <p class="muted" style="margin-bottom:0">Bir vaqtda ko'pi bilan {{limit}} ta faol navbatga yozilish mumkin.</p>
+  {{else}}
+  <p class="muted" style="margin-bottom:0">Faol navbatingiz yo'q. <a href="/navbat/yangi">Navbatga yozilish</a></p>
+  {{/if}}
+</div>
+
+{{#if tarix.length}}
+<div class="card scroll">
+  <h2>Tarix</h2>
+  <table>
+    <thead><tr><th>Sana</th><th>Vaqt</th><th>Kimga</th><th>Murojaat</th><th>Holat</th><th>Javob</th></tr></thead>
+    <tbody>
+      {{#each tarix}}
+      <tr>
+        <td>{{sana sana}}</td>
+        <td>{{time boshlanish}}</td>
+        <td>{{fio xodim}} <span class="muted">· {{rol xodim.role}}</span></td>
+        <td class="wrap">{{#if murojaat}}<b>{{murojaat}}</b> {{/if}}{{or mavzu ""}}</td>
+        <td><span class="badge s-{{status}}">{{holat status}}</span></td>
+        <td class="wrap">{{or javob_izoh "—"}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+{{/if}}

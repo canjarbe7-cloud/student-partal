@@ -1,0 +1,86 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">{{bolim.nomi}}</h1>
+  <div class="row">
+    <a class="btn ghost" href="/bolimlar">← Ro'yxat</a>
+    <a class="btn" href="/bolimlar/{{bolim.id}}/edit">Tahrirlash</a>
+    <form class="inline" method="post" action="/bolimlar/{{bolim.id}}/delete" onsubmit="return confirm('Bo\'lim o\'chirilsinmi? Xodim biriktirishlari va murojaat turlari ham o\'chadi.')">
+      <button class="btn danger">O'chirish</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <dl>
+    <dt>Turi</dt><dd>{{turi bolim.turi}}</dd>
+    <dt>Yuqori bo'lim</dt><dd>{{#if bolim.parent_id}}<a href="/bolimlar/{{bolim.parent_id}}">{{bolim.parent_nomi}}</a>{{else}}—{{/if}}</dd>
+    <dt>Xona</dt><dd>{{or bolim.xona "—"}}</dd>
+    <dt>Holat</dt><dd><span class="badge {{#if bolim.status}}on{{else}}off{{/if}}">{{#if bolim.status}}Faol{{else}}Nofaol{{/if}}</span></dd>
+  </dl>
+</div>
+
+<div class="card scroll">
+  <h2>Xodimlar</h2>
+  {{#if xodimlar.length}}
+  <table>
+    <thead><tr><th>F.I.O.</th><th>Rol</th><th>Lavozim</th><th>Asosiy</th><th></th></tr></thead>
+    <tbody>
+      {{#each xodimlar}}
+      <tr>
+        <td><a href="/users/{{user_id}}">{{fio this}}</a>{{#unless status}} <span class="badge off">Bloklangan</span>{{/unless}}</td>
+        <td>{{rol role}}</td>
+        <td>{{or lavozim "—"}}</td>
+        <td>{{#if asosiy}}Ha{{else}}—{{/if}}</td>
+        <td>
+          <form class="inline" method="post" action="/bolimlar/{{../bolim.id}}/xodim/{{id}}/delete">
+            <button class="btn danger sm">Chiqarish</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">Bo'limga xodim biriktirilmagan.</p>
+  {{/if}}
+
+  <form class="row" method="post" action="/bolimlar/{{bolim.id}}/xodim" style="margin-top:12px; align-items:flex-end">
+    <div style="flex:1; min-width:220px">
+      <label for="user_id">Xodim</label>
+      <select id="user_id" name="user_id" required>
+        <option value="">— tanlang —</option>
+        {{#each users}}<option value="{{id}}">{{fio this}} · {{rol role}}</option>{{/each}}
+      </select>
+    </div>
+    <div style="min-width:180px"><label for="lavozim">Lavozim</label><input id="lavozim" name="lavozim" maxlength="100" placeholder="mudir, uslubchi, inspektor"></div>
+    <label style="display:inline; margin-bottom:10px"><input type="checkbox" name="asosiy"> Asosiy ish joyi</label>
+    <button class="btn">Biriktirish</button>
+  </form>
+  <p class="muted" style="margin-bottom:0">Xodim allaqachon biriktirilgan bo'lsa, lavozimi yangilanadi.</p>
+</div>
+
+<div class="card scroll">
+  <h2>Murojaat turlari</h2>
+  <p class="muted">Talaba shu bo'lim qabuliga yozilayotganda mavzuni shu ro'yxatdan tanlaydi.</p>
+  {{#if murojaatlar.length}}
+  <table>
+    <thead><tr><th>Nomi</th><th>Navbatlar</th><th></th></tr></thead>
+    <tbody>
+      {{#each murojaatlar}}
+      <tr>
+        <td>{{nomi}}</td>
+        <td>{{navbat_soni}}</td>
+        <td>
+          <form class="inline" method="post" action="/bolimlar/{{../bolim.id}}/tur/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi?')">
+            <button class="btn danger sm">O'chirish</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+  <form class="row" method="post" action="/bolimlar/{{bolim.id}}/tur" style="margin-top:12px">
+    <div style="flex:1; min-width:220px"><input name="nomi" maxlength="150" required placeholder="Ma'lumotnoma olish, qayta topshirish, stipendiya..." aria-label="Murojaat turi nomi"></div>
+    <button class="btn">Qo'shish</button>
+  </form>
+</div>

@@ -1,0 +1,84 @@
+<h1>Qabulxona</h1>
+
+<form class="card row" method="get" action="/qabulxona">
+  {{#if xodimlar.length}}
+  <div style="min-width:220px; flex:1">
+    <label for="xodim">Xodim</label>
+    <select id="xodim" name="xodim">
+      <option value="">Barcha xodimlar</option>
+      {{#each xodimlar}}<option value="{{id}}" {{#if (eq id ../xodimId)}}selected{{/if}}>{{fio this}} · {{rol role}}</option>{{/each}}
+    </select>
+  </div>
+  {{/if}}
+  <div><label for="dan">Sanadan</label><input id="dan" name="dan" type="date" value="{{dan}}"></div>
+  <div><label for="gacha">Sanagacha</label><input id="gacha" name="gacha" type="date" value="{{gacha}}"></div>
+  <div style="min-width:160px">
+    <label for="holat">Holat</label>
+    <select id="holat" name="holat">
+      <option value="">Barchasi</option>
+      {{#each holatlar}}<option value="{{id}}" {{#if (eq id ../holat)}}selected{{/if}}>{{nom}}</option>{{/each}}
+    </select>
+  </div>
+  <div style="align-self:flex-end"><button class="btn">Ko'rsatish</button></div>
+</form>
+
+<div class="row" style="margin-bottom:16px">
+  <span class="muted">Tez tanlash:</span>
+  <a class="btn ghost sm" href="?{{#if xodimlar.length}}xodim={{or xodimId ""}}&{{/if}}dan={{tez.bugun}}&gacha={{tez.bugun}}">Bugun</a>
+  <a class="btn ghost sm" href="?{{#if xodimlar.length}}xodim={{or xodimId ""}}&{{/if}}dan={{tez.ertaga}}&gacha={{tez.ertaga}}">Ertaga</a>
+  <a class="btn ghost sm" href="?{{#if xodimlar.length}}xodim={{or xodimId ""}}&{{/if}}dan={{tez.bugun}}&gacha={{tez.hafta}}">7 kun</a>
+  {{#each kunlar}}
+  <a class="badge" href="?{{#if ../xodimlar.length}}xodim={{or ../xodimId ""}}&{{/if}}dan={{sana}}&gacha={{sana}}" title="Faol navbatlar">{{sana sana}}: {{soni}}</a>
+  {{/each}}
+</div>
+
+<div class="stats">
+  <div class="card stat"><b>{{jami}}</b>Jami</div>
+  <div class="card stat"><b>{{soni.kutilmoqda}}</b>Kutilmoqda</div>
+  <div class="card stat"><b>{{soni.tasdiqlandi}}</b>Tasdiqlangan</div>
+  <div class="card stat"><b>{{soni.bajarildi}}</b>Bajarilgan</div>
+  <div class="card stat"><b>{{soni.kelmadi}}</b>Kelmagan</div>
+  <div class="card stat"><b>{{soni.bekor}}</b>Bekor</div>
+</div>
+
+<div class="card scroll">
+  {{#if navbatlar.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>Sana</th><th>Vaqt</th><th>№</th><th>Talaba</th><th>Aloqa</th>
+        {{#if hammasi}}<th>Kimga</th>{{/if}}
+        <th>Murojaat</th><th>Holat</th><th>Javob</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each navbatlar}}
+      <tr>
+        <td>{{sana sana}}<br><span class="muted">{{sanaKun sana}}</span></td>
+        <td>{{time boshlanish}}–{{time tugash}}</td>
+        <td>{{navbat_raqami}}</td>
+        <td>{{fio this}}<br><span class="muted">{{or guruh "—"}} guruh, {{or kurs "—"}}-kurs</span></td>
+        <td>{{or phone "—"}}{{#if tg_user}}<br><span class="muted">{{tg_user}}</span>{{/if}}</td>
+        {{#if ../hammasi}}<td>{{fio xodim}}<br><span class="muted">{{rol xodim.role}}</span></td>{{/if}}
+        <td class="wrap">
+          {{#if murojaat}}<b>{{murojaat}}</b><br>{{/if}}{{or mavzu "—"}}
+          <div class="muted" style="font-size:12px">Yozildi: {{yaratilgan}}</div>
+        </td>
+        <td><span class="badge s-{{status}}">{{holat status}}</span></td>
+        <td>
+          <form class="holat-form" method="post" action="/qabulxona/{{id}}/holat">
+            <select name="status" aria-label="Holat">
+              {{#each ../holatlar}}<option value="{{id}}" {{#if (eq id ../status)}}selected{{/if}}>{{nom}}</option>{{/each}}
+            </select>
+            <input name="javob_izoh" value="{{javob_izoh}}" maxlength="1000" placeholder="Izoh" aria-label="Izoh">
+            <button class="btn sm">Saqlash</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted" style="margin:0">Bu oraliqda navbat yo'q.</p>
+  {{/if}}
+</div>

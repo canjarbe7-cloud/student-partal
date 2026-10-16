@@ -4,10 +4,12 @@ const express = require('express');
 const session = require('express-session');
 const { engine } = require('express-handlebars');
 
-const { helpers } = require('./helpers/hbs');
+const { helpers, QABUL_ROLLAR } = require('./helpers/hbs');
+const { hozir } = require('./helpers/sana');
 const { requireLogin } = require('./middleware/auth');
 const Users = require('./queries/users');
 const Qabul = require('./queries/qabul');
+const Navbat = require('./queries/navbat');
 
 const app = express();
 
@@ -35,11 +37,18 @@ app.use(
   })
 );
 
-// Har bir .hbs ichida {{me}} va {{isStaff}} mavjud bo'ladi
+// Har bir .hbs ichida {{me}}, {{isStaff}}, {{isStudent}}, {{isQabulchi}} va {{flash}} mavjud bo'ladi
 app.use((req, res, next) => {
   const me = req.session.user || null;
   res.locals.me = me;
   res.locals.isStaff = !!me && (me.role === 'admin' || me.role === 'dekanat');
+  res.locals.isStudent = !!me && me.role === 'student';
+  res.locals.isQabulchi = !!me && QABUL_ROLLAR.includes(me.role);
+  res.locals.qabulMenu = res.locals.isStaff || res.locals.isQabulchi;
+  if (req.session.flash) {
+    res.locals.flash = req.session.flash;
+    delete req.session.flash;
+  }
   next();
 });
 
@@ -47,14 +56,34 @@ app.use(require('./routes/auth'));
 
 app.get('/', requireLogin, async (req, res, next) => {
   try {
-    const [soni, jadval, profil] = await Promise.all([
+    const me = req.session.user;
+    const bugun = hozir().sana;
+    const isStudent = me.role === 'student';
+    const [soni, jadval, profil, navbatlarim, tyutorlar, kunlar] = await Promise.all([
       Users.countByRole(),
       Qabul.schedule(),
-      Users.findById(req.session.user.id),
+      Users.findById(me.id),
+      isStudent ? Navbat.mine(me.id) : [],
+      isStudent ? Users.tyutorlari(me.id) : [],
+      QABUL_ROLLAR.includes(me.role) ? Navbat.kelgusiKunlar(me.id, bugun, 5) : [],
     ]);
     // O'chirilgan yoki bloklangan foydalanuvchini tizimdan chiqaramiz
     if (!profil || !profil.status) return req.session.destroy(() => res.redirect('/login'));
-    res.render('home', { title: 'Bosh sahifa', soni, jadval, profil });
+    const yaqin = navbatlarim
+      .filter((n) => n.sana >= bugun && (n.status === 'kutilmoqda' || n.status === 'tasdiqlandi'))
+      .reverse()
+      .slice(0, 3);
+    const bugungi = kunlar.find((k) => k.sana === bugun);
+    res.render('home', {
+      title: 'Bosh sahifa',
+      soni,
+      jadval,
+      profil,
+      yaqin,
+      tyutorlar,
+      kunlar,
+      bugungiSoni: bugungi ? bugungi.soni : 0,
+    });
   } catch (err) {
     next(err);
   }
@@ -62,6 +91,9 @@ app.get('/', requireLogin, async (req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/qabul', require('./routes/qabul'));
+app.use('/bolimlar', require('./routes/bolimlar'));
+app.use('/navbat', require('./routes/navbat'));
+app.use('/qabulxona', require('./routes/qabulxona'));
 
 app.use((req, res) => {
   res.status(404).render('error', { title: 'Topilmadi', message: 'Sahifa topilmadi.' });

@@ -28,15 +28,11 @@
     {{! dekanat_user_info }}
     <div data-for="dekanat"><label for="lavozim">Lavozim</label><input id="lavozim" name="lavozim" maxlength="100" value="{{user.lavozim}}" placeholder="Dekan o'rinbosari"></div>
 
-    {{! teacher_info va dekanat_user_info -> qabul_vaqti }}
-    <div data-for="teacher dekanat">
-      <label for="qabul_vaqti">Qabul vaqti</label>
-      <select id="qabul_vaqti" name="qabul_vaqti">
-        <option value="">— belgilanmagan —</option>
-        {{#each qabullar}}<option value="{{id}}" {{#if (eq id ../user.qabul_vaqti)}}selected{{/if}}>{{qabul this}}</option>{{/each}}
-      </select>
-    </div>
+    {{! tyutor_guruh }}
+    <div data-for="tyutor" style="grid-column: 1 / -1"><label for="guruhlar">Biriktirilgan guruhlar (vergul bilan)</label>
+      <input id="guruhlar" name="guruhlar" value="{{user.guruhlar}}" placeholder="101-A, 102-B"></div>
   </div>
+  <p class="muted" data-for="teacher dekanat mudir tyutor xodim">Qabul vaqtlari «Qabul vaqtlari» sahifasida, bo'lim va lavozim esa «Bo'limlar» sahifasida belgilanadi.</p>
 
   <p><label style="display:inline"><input type="checkbox" name="status" {{#if user.status}}checked{{/if}}> Faol</label></p>
 

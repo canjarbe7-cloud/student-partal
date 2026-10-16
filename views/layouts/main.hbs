@@ -22,7 +22,8 @@
     th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
     th { color:var(--muted); font-weight:600; font-size:13px; }
     label { display:block; font-size:13px; color:var(--muted); margin-bottom:4px; }
-    input, select { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+    input, select, textarea { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+    textarea { resize:vertical; min-height:70px; }
     input[type=checkbox] { width:auto; }
     .btn { display:inline-block; padding:8px 14px; border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:6px; text-decoration:none; font:inherit; cursor:pointer; }
     .btn.ghost { background:transparent; color:var(--accent); }
@@ -39,14 +40,53 @@
     dl { display:grid; grid-template-columns:160px 1fr; gap:6px 12px; margin:0; }
     dt { color:var(--muted); } dd { margin:0; }
     [hidden] { display:none !important; }
+    h2 { font-size:17px; margin:0 0 12px; }
+    td.wrap { white-space:normal; min-width:180px; }
+    .flash { border-radius:6px; padding:10px 14px; margin-bottom:16px; border:1px solid; }
+    .flash.ok { background:#e3f5ec; border-color:#b7e2cb; color:var(--ok); }
+    .flash.err { background:#fbe9e7; border-color:#f1c4bd; color:var(--danger); }
+    /* navbat holatlari */
+    .badge.s-kutilmoqda { background:#fff4dc; color:#9a6400; }
+    .badge.s-tasdiqlandi { background:#e4ecff; color:var(--accent); }
+    .badge.s-bajarildi { background:#e3f5ec; color:var(--ok); }
+    .badge.s-kelmadi, .badge.s-bekor { background:#fbe9e7; color:var(--danger); }
+    /* sana va vaqt tanlash */
+    .chips { display:flex; gap:8px; flex-wrap:wrap; }
+    .chip { display:inline-flex; flex-direction:column; align-items:center; min-width:84px; padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); text-decoration:none; font-size:13px; line-height:1.3; }
+    .chip b { font-size:15px; }
+    .chip.active { border-color:var(--accent); background:#e4ecff; }
+    .chip.off { color:var(--muted); background:#f0f1f3; }
+    .slots { display:grid; grid-template-columns:repeat(auto-fill, minmax(86px, 1fr)); gap:8px; margin:8px 0 12px; }
+    .slot input { position:absolute; opacity:0; pointer-events:none; }
+    .slot span { display:block; text-align:center; padding:8px 4px; border:1px solid var(--line); border-radius:6px; cursor:pointer; background:#fff; }
+    .slot input:checked + span { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .slot input:focus-visible + span { outline:2px solid var(--accent); outline-offset:2px; }
+    .slot input:disabled + span { cursor:not-allowed; color:var(--muted); background:#f0f1f3; text-decoration:line-through; }
+    .slot { position:relative; margin:0; color:var(--text); font-size:14px; }
+    .xodim { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+    .xodim .kunlar { font-size:13px; color:var(--muted); }
+    .holat-form { display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-width:220px; }
+    .holat-form select { width:auto; padding:4px 6px; }
+    .holat-form input { flex:1 1 120px; width:auto; padding:4px 6px; }
+    .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; margin-bottom:16px; }
+    .stats .card { margin:0; padding:10px 14px; }
+    .stats b { font-size:20px; }
   </style>
 </head>
 <body>
   {{#if me}}
   <header>
     <a class="brand" href="/">Student Portal</a>
+    {{#if isStudent}}
+      <a href="/navbat">Navbatlarim</a>
+      <a href="/navbat/yangi">Navbatga yozilish</a>
+    {{/if}}
     {{#if isStaff}}
       <a href="/users">Foydalanuvchilar</a>
+      <a href="/bolimlar">Bo'limlar</a>
+    {{/if}}
+    {{#if qabulMenu}}
+      <a href="/qabulxona">Qabulxona</a>
       <a href="/qabul">Qabul vaqtlari</a>
     {{/if}}
     <span class="spacer"></span>
@@ -55,6 +95,7 @@
   </header>
   {{/if}}
   <main>
+    {{#if flash}}<div class="flash {{flash.type}}" role="status">{{flash.text}}</div>{{/if}}
     {{{body}}}
   </main>
 </body>

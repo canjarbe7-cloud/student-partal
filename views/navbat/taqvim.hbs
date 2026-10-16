@@ -1,0 +1,76 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <div>
+    <h1 style="margin:0">{{fio xodim}}</h1>
+    <div class="muted">{{rol xodim.role}}{{#if xodim.lavozim}} · {{xodim.lavozim}}{{/if}}{{#if xodim.bolimlar}} · {{xodim.bolimlar}}{{/if}}</div>
+  </div>
+  <a class="btn ghost" href="/navbat/yangi">← Boshqa xodim</a>
+</div>
+{{> errors}}
+
+<p class="muted">2-qadam: kunni tanlang (kelgusi {{bronKunlari}} kun).</p>
+{{#if kunlar.length}}
+<div class="chips" style="margin-bottom:16px">
+  {{#each kunlar}}
+  <a class="chip {{#if active}}active{{/if}} {{#unless bosh}}off{{/unless}}" href="?sana={{sana}}" {{#if istisno}}title="{{istisno}}"{{/if}}>
+    <b>{{sana sana}}</b>
+    <span>{{sanaKun sana}}</span>
+    <span>{{#if istisno}}Qabul yo'q{{else}}{{#if bosh}}{{bosh}} bo'sh{{else}}Joy yo'q{{/if}}{{/if}}</span>
+  </a>
+  {{/each}}
+</div>
+{{else}}
+<div class="card"><p class="muted" style="margin:0">Yaqin kunlarda qabul yo'q.</p></div>
+{{/if}}
+
+{{#if kun}}
+  {{#if kun.istisno}}
+  <div class="card"><p style="margin:0">{{sana kun.sana}} kuni qabul bo'lmaydi: <b>{{kun.istisno}}</b></p></div>
+  {{else}}
+  {{#each kun.bloklar}}
+  <form class="card" method="post" action="/navbat">
+    <input type="hidden" name="xodim_id" value="{{../xodim.id}}">
+    <input type="hidden" name="qabul_vaqti_id" value="{{q.id}}">
+    <input type="hidden" name="sana" value="{{../kun.sana}}">
+    <h2>
+      {{sana ../kun.sana}}, {{time q.start_time}}–{{time q.end_time}}
+      {{#if q.bolim_nomi}}· {{q.bolim_nomi}}{{/if}}{{#if q.xona}} · {{q.xona}}-xona{{/if}}
+    </h2>
+    <p class="muted" style="margin:0">Har bir navbat {{q.slot_min}} daqiqa · {{bosh}} ta bo'sh vaqt</p>
+
+    {{#if bosh}}
+    <fieldset style="border:0; padding:0; margin:12px 0 0">
+      <legend class="muted" style="font-size:13px">3-qadam: vaqtni tanlang</legend>
+      <div class="slots">
+        {{#each slots}}
+        <label class="slot" title="{{#if band}}Band{{else}}{{#if otgan}}O'tib ketgan{{else}}{{raqam}}-navbat{{/if}}{{/if}}">
+          <input type="radio" name="boshlanish" value="{{min}}" required {{#if yopiq}}disabled{{/if}}
+            {{#if (eq ../../tanlov.qabul_vaqti_id ../q.id)}}{{#if (eq ../../tanlov.boshlanish min)}}checked{{/if}}{{/if}}>
+          <span>{{time min}}</span>
+        </label>
+        {{/each}}
+      </div>
+    </fieldset>
+
+    <div class="grid">
+      {{#if turlar.length}}
+      <div>
+        <label for="tur-{{q.id}}">Murojaat turi</label>
+        <select id="tur-{{q.id}}" name="murojaat_turi_id">
+          <option value="">— tanlang —</option>
+          {{#each turlar}}<option value="{{id}}" {{#if (eq id ../../tanlov.murojaat_turi_id)}}selected{{/if}}>{{nomi}}</option>{{/each}}
+        </select>
+      </div>
+      {{/if}}
+      <div style="grid-column: 1 / -1">
+        <label for="mavzu-{{q.id}}">Murojaat mazmuni</label>
+        <textarea id="mavzu-{{q.id}}" name="mavzu" maxlength="1000" placeholder="Qisqacha yozing: nima masalada kelmoqchisiz">{{#if (eq ../tanlov.qabul_vaqti_id q.id)}}{{../tanlov.mavzu}}{{/if}}</textarea>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn">Navbatga yozilish</button></div>
+    {{else}}
+    <p style="margin-bottom:0">{{#if toldi}}Bu kunga navbatlar to'lgan.{{else}}Bo'sh vaqt qolmagan.{{/if}} Boshqa kunni tanlang.</p>
+    {{/if}}
+  </form>
+  {{/each}}
+  {{/if}}
+{{/if}}

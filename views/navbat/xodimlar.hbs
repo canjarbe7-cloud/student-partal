@@ -1,0 +1,32 @@
+<h1>Navbatga yozilish</h1>
+<p class="muted">1-qadam: kimning qabuliga yozilmoqchisiz?</p>
+
+<form class="card row" method="get" action="/navbat/yangi">
+  <div style="flex:1; min-width:180px"><input name="q" value="{{q}}" placeholder="Familiya yoki ism"></div>
+  <div style="min-width:200px">
+    <select name="bolim">
+      <option value="">Barcha bo'limlar</option>
+      {{#each bolimlar}}<option value="{{id}}" {{#if (eq id ../bolimId)}}selected{{/if}}>{{nomi}} ({{turi turi}})</option>{{/each}}
+    </select>
+  </div>
+  <button class="btn ghost">Qidirish</button>
+</form>
+
+{{#if tyutorYoq}}
+<p class="muted">Guruhingizga tyutor biriktirilmagan, shuning uchun ro'yxatda tyutor yo'q. Guruhingiz noto'g'ri bo'lsa, dekanatga murojaat qiling.</p>
+{{/if}}
+
+{{#each xodimlar}}
+<div class="card xodim">
+  <div>
+    <b>{{fio this}}</b>
+    <span class="badge">{{rol role}}</span>
+    {{#if lavozim}}<span class="muted">· {{lavozim}}</span>{{/if}}
+    {{#if bolimlar}}<div class="muted">{{bolimlar}}</div>{{/if}}
+    <div class="kunlar">{{#each kunlar}}{{qabul this}}{{#unless @last}}; {{/unless}}{{/each}}</div>
+  </div>
+  <a class="btn" href="/navbat/yangi/{{id}}">Vaqt tanlash →</a>
+</div>
+{{else}}
+<div class="card"><p class="muted" style="margin:0">Qabul qiladigan xodim topilmadi.</p></div>
+{{/each}}

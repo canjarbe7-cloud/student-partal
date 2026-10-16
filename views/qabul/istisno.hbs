@@ -1,0 +1,59 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">Qabul bo'lmaydigan kunlar</h1>
+  <a class="btn ghost" href="/qabul">← Qabul vaqtlari</a>
+</div>
+
+<form class="card" method="post" action="/qabul/istisno">
+  <div class="grid">
+    {{#if xodimlar.length}}
+    <div>
+      <label for="xodim_id">Xodim</label>
+      <select id="xodim_id" name="xodim_id" required>
+        <option value="">— tanlang —</option>
+        {{#each xodimlar}}<option value="{{id}}" {{#if (eq id ../xodimId)}}selected{{/if}}>{{fio this}} · {{rol role}}</option>{{/each}}
+      </select>
+    </div>
+    {{/if}}
+    <div><label for="sana">Sana</label><input id="sana" name="sana" type="date" min="{{bugun}}" required></div>
+    <div><label for="sabab">Sabab</label><input id="sabab" name="sabab" maxlength="255" placeholder="Bayram, safar, kasallik..."></div>
+  </div>
+  <p class="muted">Shu kunga yozilgan faol navbatlar avtomatik bekor qilinadi va talaba sababini ko'radi.</p>
+  <button class="btn">Qo'shish</button>
+</form>
+
+{{#if xodimlar.length}}
+<form class="card row" method="get" action="/qabul/istisno">
+  <div style="flex:1; min-width:220px">
+    <select name="xodim">
+      <option value="">Barcha xodimlar</option>
+      {{#each xodimlar}}<option value="{{id}}" {{#if (eq id ../xodimId)}}selected{{/if}}>{{fio this}} · {{rol role}}</option>{{/each}}
+    </select>
+  </div>
+  <button class="btn ghost">Ko'rsatish</button>
+</form>
+{{/if}}
+
+<div class="card scroll">
+  {{#if istisnolar.length}}
+  <table>
+    <thead><tr><th>Sana</th><th>Kun</th><th>Xodim</th><th>Sabab</th><th></th></tr></thead>
+    <tbody>
+      {{#each istisnolar}}
+      <tr>
+        <td>{{sana sana}}</td>
+        <td>{{sanaKun sana}}</td>
+        <td>{{fio this}}</td>
+        <td class="wrap">{{or sabab "—"}}</td>
+        <td>
+          <form class="inline" method="post" action="/qabul/istisno/{{id}}/delete" onsubmit="return confirm('O\'chirilsinmi?')">
+            <button class="btn danger sm">O'chirish</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted" style="margin:0">Kelgusi kunlarda istisno yo'q.</p>
+  {{/if}}
+</div>

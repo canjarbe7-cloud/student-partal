@@ -1,0 +1,27 @@
+<h1>{{#if isNew}}Yangi bo'lim{{else}}Bo'limni tahrirlash{{/if}}</h1>
+{{> errors}}
+
+<form class="card" method="post" action="{{#if isNew}}/bolimlar{{else}}/bolimlar/{{item.id}}{{/if}}">
+  <div class="grid">
+    <div><label for="nomi">Nomi</label><input id="nomi" name="nomi" maxlength="150" value="{{item.nomi}}" required placeholder="Axborot texnologiyalari kafedrasi"></div>
+    <div>
+      <label for="turi">Turi</label>
+      <select id="turi" name="turi">
+        {{#each turlar}}<option value="{{id}}" {{#if (eq id ../item.turi)}}selected{{/if}}>{{nom}}</option>{{/each}}
+      </select>
+    </div>
+    <div>
+      <label for="parent_id">Yuqori bo'lim</label>
+      <select id="parent_id" name="parent_id">
+        <option value="">— yo'q —</option>
+        {{#each bolimlar}}<option value="{{id}}" {{#if (eq id ../item.parent_id)}}selected{{/if}}>{{nomi}} ({{turi turi}})</option>{{/each}}
+      </select>
+    </div>
+    <div><label for="xona">Xona</label><input id="xona" name="xona" maxlength="50" value="{{item.xona}}" placeholder="204"></div>
+  </div>
+  <p><label style="display:inline"><input type="checkbox" name="status" {{#if item.status}}checked{{/if}}> Faol</label></p>
+  <div class="row">
+    <button class="btn">Saqlash</button>
+    <a class="btn ghost" href="{{#if isNew}}/bolimlar{{else}}/bolimlar/{{item.id}}{{/if}}">Bekor qilish</a>
+  </div>
+</form>

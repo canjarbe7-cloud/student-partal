@@ -3,17 +3,37 @@
 
 <form class="card" method="post" action="{{#if isNew}}/qabul{{else}}/qabul/{{item.id}}{{/if}}">
   <div class="grid">
+    {{#if xodimlar.length}}
     <div>
-      <label for="week_date">Hafta kuni</label>
-      <select id="week_date" name="week_date" required>
+      <label for="xodim_id">Xodim</label>
+      <select id="xodim_id" name="xodim_id" required>
         <option value="">— tanlang —</option>
-        {{#each kunlar}}<option value="{{id}}" {{#if (eq id ../item.week_date)}}selected{{/if}}>{{nom}}</option>{{/each}}
+        {{#each xodimlar}}<option value="{{id}}" {{#if (eq id ../item.xodim_id)}}selected{{/if}}>{{fio this}} · {{rol role}}</option>{{/each}}
+      </select>
+    </div>
+    {{/if}}
+    <div>
+      <label for="bolim_id">Bo'lim nomidan</label>
+      <select id="bolim_id" name="bolim_id">
+        <option value="">— ko'rsatilmagan —</option>
+        {{#each bolimlar}}<option value="{{id}}" {{#if (eq id ../item.bolim_id)}}selected{{/if}}>{{nomi}} ({{turi turi}})</option>{{/each}}
+      </select>
+    </div>
+    <div>
+      <label for="hafta_kuni">Hafta kuni</label>
+      <select id="hafta_kuni" name="hafta_kuni" required>
+        <option value="">— tanlang —</option>
+        {{#each kunlar}}<option value="{{id}}" {{#if (eq id ../item.hafta_kuni)}}selected{{/if}}>{{nom}}</option>{{/each}}
       </select>
     </div>
     <div><label for="start_time">Boshlanishi</label><input id="start_time" name="start_time" type="time" value="{{time item.start_time}}" required></div>
     <div><label for="end_time">Tugashi</label><input id="end_time" name="end_time" type="time" value="{{time item.end_time}}" required></div>
+    <div><label for="slot_min">Bitta navbat (daqiqa)</label><input id="slot_min" name="slot_min" type="number" min="5" max="240" value="{{item.slot_min}}" required></div>
+    <div><label for="max_navbat">Kunlik navbatlar chegarasi</label><input id="max_navbat" name="max_navbat" type="number" min="1" max="500" value="{{item.max_navbat}}" placeholder="bo'sh = cheklanmagan"></div>
   </div>
-  <div class="row" style="margin-top:16px">
+  <p><label style="display:inline"><input type="checkbox" name="status" {{#if item.status}}checked{{/if}}> Faol (talabalar yozila oladi)</label></p>
+  {{#unless isNew}}<p class="muted">Vaqtni o'zgartirsangiz, avval yozilgan navbatlar o'z vaqtida qoladi.</p>{{/unless}}
+  <div class="row">
     <button class="btn">Saqlash</button>
     <a class="btn ghost" href="/qabul">Bekor qilish</a>
   </div>

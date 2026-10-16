@@ -19,7 +19,12 @@
       <dt>Kurs</dt><dd>{{or user.kurs "—"}}</dd>
     {{/if}}
     {{#if (eq user.role "dekanat")}}<dt>Lavozim</dt><dd>{{or user.lavozim "—"}}</dd>{{/if}}
-    {{#if user.qabul_vaqti}}<dt>Qabul vaqti</dt><dd>{{qabul user}}</dd>{{/if}}
+    {{#if (eq user.role "tyutor")}}<dt>Guruhlari</dt><dd>{{or user.guruhlar "—"}}</dd>{{/if}}
+    {{#if user.bolimlar}}<dt>Bo'limlar</dt><dd>{{user.bolimlar}}</dd>{{/if}}
+    {{#if (oneOf user.role "teacher dekanat mudir tyutor xodim")}}
+      <dt>Qabul vaqtlari</dt>
+      <dd>{{user.qabul_soni}} ta · <a href="/qabul?xodim={{user.id}}">ko'rish</a> · <a href="/qabulxona?xodim={{user.id}}">navbatlari</a></dd>
+    {{/if}}
     <dt>Yaratilgan</dt><dd>{{user.created_at}}</dd>
     <dt>Yangilangan</dt><dd>{{user.updated_at}}</dd>
   </dl>

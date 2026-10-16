@@ -1,0 +1,28 @@
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <h1 style="margin:0">Bo'limlar</h1>
+  <a class="btn" href="/bolimlar/new">+ Yangi</a>
+</div>
+
+<div class="card scroll">
+  {{#if bolimlar.length}}
+  <table>
+    <thead><tr><th>Nomi</th><th>Turi</th><th>Yuqori bo'lim</th><th>Xona</th><th>Xodimlar</th><th>Murojaat turlari</th><th>Holat</th><th></th></tr></thead>
+    <tbody>
+      {{#each bolimlar}}
+      <tr>
+        <td><a href="/bolimlar/{{id}}">{{nomi}}</a></td>
+        <td>{{turi turi}}</td>
+        <td>{{or parent_nomi "—"}}</td>
+        <td>{{or xona "—"}}</td>
+        <td>{{xodim_soni}}</td>
+        <td>{{tur_soni}}</td>
+        <td><span class="badge {{#if status}}on{{else}}off{{/if}}">{{#if status}}Faol{{else}}Nofaol{{/if}}</span></td>
+        <td><a class="btn ghost sm" href="/bolimlar/{{id}}/edit">Tahrirlash</a></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted" style="margin:0">Hozircha bo'lim yo'q. Avval dekanat, kafedra va bo'limlarni qo'shing.</p>
+  {{/if}}
+</div>

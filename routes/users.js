@@ -1,20 +1,19 @@
 const router = require('express').Router();
 const Users = require('../queries/users');
-const Qabul = require('../queries/qabul');
 const { requireRole } = require('../middleware/auth');
+const { ROLLAR } = require('../helpers/hbs');
+const { str, num } = require('../helpers/form');
 
-const ROLES = ['admin', 'student', 'teacher', 'dekanat'];
+const ROLES = Object.keys(ROLLAR);
 
-const str = (v) => {
-  const s = String(v ?? '').trim();
-  return s === '' ? null : s;
-};
-const num = (v) => {
-  const s = str(v);
-  if (s === null) return null;
-  const n = Number(s);
-  return Number.isSafeInteger(n) ? n : NaN;
-};
+// "101-A, 102-B" -> ['101-A', '102-B'] (takrorlar katta-kichik harfdan qat'i nazar olib tashlanadi)
+function parseGuruhlar(v) {
+  const seen = new Set();
+  return String(v ?? '')
+    .split(/[,;\n]/)
+    .map((g) => g.trim())
+    .filter((g) => g && !seen.has(g.toLowerCase()) && seen.add(g.toLowerCase()));
+}
 
 // Formadan kelgan ma'lumotni tozalaydi va tekshiradi
 function parseForm(body, { isNew }) {
@@ -31,7 +30,7 @@ function parseForm(body, { isNew }) {
     kurs: num(body.kurs),
     lavozim: str(body.lavozim),
     tg_user: str(body.tg_user),
-    qabul_vaqti: num(body.qabul_vaqti),
+    guruhlar: body.role === 'tyutor' ? parseGuruhlar(body.guruhlar) : [],
   };
   const errors = [];
   if (!d.ism) errors.push('Ism kiritilmagan');
@@ -44,9 +43,8 @@ function parseForm(body, { isNew }) {
     if (d[k] && d[k].length > 100) errors.push(`${k}: 100 belgidan oshmasin`);
   }
   if (d.phone && d.phone.length > 20) errors.push('Telefon 20 belgidan oshmasin');
-  for (const k of ['kurs', 'qabul_vaqti']) {
-    if (Number.isNaN(d[k])) errors.push(`${k}: butun son bo'lishi kerak`);
-  }
+  if (Number.isNaN(d.kurs)) errors.push("Kurs butun son bo'lishi kerak");
+  if (d.guruhlar.some((g) => g.length > 100)) errors.push("Guruh nomi 100 belgidan oshmasin");
   if (d.role === 'student' && d.kurs !== null && !(d.kurs >= 1 && d.kurs <= 6)) {
     errors.push("Kurs 1 dan 6 gacha bo'lsin");
   }
@@ -55,19 +53,18 @@ function parseForm(body, { isNew }) {
 
 // Postgres xatolarini tushunarli matnga aylantiradi
 function dbError(err) {
-  if (err.code === '23505') return 'Bu login band';
-  if (err.code === '23503') return 'Tanlangan qabul vaqti topilmadi';
+  if (err.code === '23505' && err.constraint === 'users_login_key') return 'Bu login band';
   return null;
 }
 
 async function renderForm(res, { user, isNew, errors, status = 200 }) {
-  const qabullar = await Qabul.list();
+  // Xatodan keyin qayta ko'rsatishda guruhlar massiv bo'lib keladi
+  if (Array.isArray(user.guruhlar)) user = { ...user, guruhlar: user.guruhlar.join(', ') };
   res.status(status).render('users/form', {
     title: isNew ? 'Yangi foydalanuvchi' : 'Tahrirlash',
     user,
     isNew,
     errors,
-    qabullar,
     roles: ROLES,
   });
 }

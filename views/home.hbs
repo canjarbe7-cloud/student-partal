@@ -5,11 +5,56 @@
   <a class="card stat" href="/users?role=student" style="text-decoration:none;color:inherit"><b>{{or soni.student 0}}</b>Talabalar</a>
   <a class="card stat" href="/users?role=teacher" style="text-decoration:none;color:inherit"><b>{{or soni.teacher 0}}</b>O'qituvchilar</a>
   <a class="card stat" href="/users?role=dekanat" style="text-decoration:none;color:inherit"><b>{{or soni.dekanat 0}}</b>Dekanat xodimlari</a>
+  <a class="card stat" href="/users?role=tyutor" style="text-decoration:none;color:inherit"><b>{{or soni.tyutor 0}}</b>Tyutorlar</a>
+</div>
+{{/if}}
+
+{{#if isStudent}}
+<div class="card">
+  <div class="row" style="justify-content:space-between">
+    <h2 style="margin:0">Yaqin navbatlarim</h2>
+    <a class="btn" href="/navbat/yangi">+ Navbatga yozilish</a>
+  </div>
+  {{#if yaqin.length}}
+  <div class="scroll" style="margin-top:12px">
+    <table>
+      <tbody>
+        {{#each yaqin}}
+        <tr>
+          <td>{{sana sana}}, {{time boshlanish}}</td>
+          <td>{{fio xodim}} <span class="muted">· {{rol xodim.role}}</span></td>
+          <td>{{or bolim_nomi ""}}{{#if xona}} · {{xona}}-xona{{/if}}</td>
+          <td><span class="badge s-{{status}}">{{holat status}}</span></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-bottom:0"><a href="/navbat">Barcha navbatlarim →</a></p>
+  {{else}}
+  <p class="muted" style="margin-bottom:0">Faol navbatingiz yo'q.</p>
+  {{/if}}
+</div>
+{{/if}}
+
+{{#if isQabulchi}}
+<div class="card">
+  <div class="row" style="justify-content:space-between">
+    <h2 style="margin:0">Bugun sizga {{bugungiSoni}} ta navbat</h2>
+    <a class="btn" href="/qabulxona">Qabulxonaga o'tish</a>
+  </div>
+  {{#if kunlar.length}}
+  <div class="chips" style="margin-top:12px">
+    {{#each kunlar}}
+    <a class="chip" href="/qabulxona?dan={{sana}}&gacha={{sana}}"><b>{{soni}}</b>{{sana sana}}</a>
+    {{/each}}
+  </div>
+  {{/if}}
 </div>
 {{/if}}
 
 <div class="card">
-  <h2 style="margin-top:0;font-size:17px">Mening ma'lumotlarim</h2>
+  <h2>Mening ma'lumotlarim</h2>
   <dl>
     <dt>F.I.O.</dt><dd>{{fio profil}}</dd>
     <dt>Login</dt><dd>{{profil.login}}</dd>
@@ -17,28 +62,29 @@
     {{#if (eq profil.role "student")}}
       <dt>Guruh</dt><dd>{{or profil.guruh "—"}}</dd>
       <dt>Kurs</dt><dd>{{or profil.kurs "—"}}</dd>
+      <dt>Tyutorim</dt>
+      <dd>{{#each tyutorlar}}{{fio this}}{{#if phone}} · {{phone}}{{/if}}{{#unless @last}}<br>{{/unless}}{{else}}—{{/each}}</dd>
     {{/if}}
-    {{#if (eq profil.role "teacher")}}<dt>Qabul vaqtim</dt><dd>{{qabul profil}}</dd>{{/if}}
-    {{#if (eq profil.role "dekanat")}}
-      <dt>Lavozim</dt><dd>{{or profil.lavozim "—"}}</dd>
-      <dt>Qabul vaqtim</dt><dd>{{qabul profil}}</dd>
-    {{/if}}
+    {{#if (eq profil.role "dekanat")}}<dt>Lavozim</dt><dd>{{or profil.lavozim "—"}}</dd>{{/if}}
+    {{#if (eq profil.role "tyutor")}}<dt>Guruhlarim</dt><dd>{{or profil.guruhlar "—"}}</dd>{{/if}}
+    {{#if profil.bolimlar}}<dt>Bo'limlar</dt><dd>{{profil.bolimlar}}</dd>{{/if}}
   </dl>
 </div>
 
 <div class="card">
-  <h2 style="margin-top:0;font-size:17px">Qabul jadvali</h2>
+  <h2>Qabul jadvali</h2>
   {{#if jadval.length}}
   <div class="scroll">
     <table>
-      <thead><tr><th>Kun</th><th>Vaqt</th><th>F.I.O.</th><th>Kim</th><th>Telefon</th></tr></thead>
+      <thead><tr><th>Kun</th><th>Vaqt</th><th>F.I.O.</th><th>Kim</th><th>Bo'lim</th><th>Telefon</th></tr></thead>
       <tbody>
         {{#each jadval}}
         <tr>
-          <td>{{kun week_date}}</td>
+          <td>{{kun hafta_kuni}}</td>
           <td>{{time start_time}}–{{time end_time}}</td>
           <td>{{fio this}}</td>
           <td>{{rol role}}</td>
+          <td>{{or bolim_nomi "—"}}{{#if xona}} · {{xona}}-xona{{/if}}</td>
           <td>{{or phone "—"}}</td>
         </tr>
         {{/each}}

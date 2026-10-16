@@ -1,19 +1,22 @@
 const bcrypt = require('bcryptjs');
 const db = require('../db/pool');
 
-// users + rolga mos info jadvali + qabul vaqti — bitta qatorda
+// users + rolga mos info jadvali + tyutor guruhlari + bo'limlar — bitta qatorda
 const SELECT_FULL = `
   SELECT u.id, u.ism, u.familiya, u.ochestva, u.login, u.role, u.phone,
          u.status, u.created_at, u.updated_at,
          s.guruh, s.kurs, d.lavozim,
-         COALESCE(s.tg_user, t.tg_user, d.tg_user)       AS tg_user,
-         COALESCE(t.qabul_vaqti, d.qabul_vaqti)          AS qabul_vaqti,
-         q.start_time, q.end_time, q.week_date
+         COALESCE(s.tg_user, t.tg_user, d.tg_user) AS tg_user,
+         (SELECT string_agg(g.guruh, ', ' ORDER BY g.guruh)
+            FROM tyutor_guruh g WHERE g.tyutor_id = u.id) AS guruhlar,
+         (SELECT string_agg(b.nomi || COALESCE(' (' || xb.lavozim || ')', ''), ', ' ORDER BY xb.asosiy DESC, b.nomi)
+            FROM xodim_bolim xb JOIN bolimlar b ON b.id = xb.bolim_id
+           WHERE xb.user_id = u.id) AS bolimlar,
+         (SELECT COUNT(*) FROM qabul_vaqti q WHERE q.xodim_id = u.id)::int AS qabul_soni
   FROM users u
   LEFT JOIN student_info      s ON s.user_id = u.id
   LEFT JOIN teacher_info      t ON t.user_id = u.id
   LEFT JOIN dekanat_user_info d ON d.user_id = u.id
-  LEFT JOIN qabul_vaqti       q ON q.id = COALESCE(t.qabul_vaqti, d.qabul_vaqti)
 `;
 
 async function list({ role, q } = {}) {
@@ -26,7 +29,8 @@ async function list({ role, q } = {}) {
   if (q) {
     params.push(`%${q}%`);
     where.push(`(u.ism ILIKE $${params.length} OR u.familiya ILIKE $${params.length}
-                 OR u.login ILIKE $${params.length} OR u.phone ILIKE $${params.length})`);
+                 OR u.login ILIKE $${params.length} OR u.phone ILIKE $${params.length}
+                 OR s.guruh ILIKE $${params.length})`);
   }
   const sql = `${SELECT_FULL} ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
                ORDER BY u.id DESC`;
@@ -48,6 +52,8 @@ async function saveRoleInfo(client, userId, role, d) {
   if (role !== 'student') await client.query('DELETE FROM student_info WHERE user_id = $1', [userId]);
   if (role !== 'teacher') await client.query('DELETE FROM teacher_info WHERE user_id = $1', [userId]);
   if (role !== 'dekanat') await client.query('DELETE FROM dekanat_user_info WHERE user_id = $1', [userId]);
+  // Tyutor guruhlari har safar formadagi ro'yxat bilan to'liq almashtiriladi
+  await client.query('DELETE FROM tyutor_guruh WHERE tyutor_id = $1', [userId]);
 
   if (role === 'student') {
     await client.query(
@@ -59,20 +65,23 @@ async function saveRoleInfo(client, userId, role, d) {
     );
   } else if (role === 'teacher') {
     await client.query(
-      `INSERT INTO teacher_info (user_id, tg_user, qabul_vaqti)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (user_id) DO UPDATE
-         SET tg_user = EXCLUDED.tg_user, qabul_vaqti = EXCLUDED.qabul_vaqti`,
-      [userId, d.tg_user, d.qabul_vaqti]
+      `INSERT INTO teacher_info (user_id, tg_user)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id) DO UPDATE SET tg_user = EXCLUDED.tg_user`,
+      [userId, d.tg_user]
     );
   } else if (role === 'dekanat') {
     await client.query(
-      `INSERT INTO dekanat_user_info (user_id, lavozim, tg_user, qabul_vaqti)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO dekanat_user_info (user_id, lavozim, tg_user)
+       VALUES ($1, $2, $3)
        ON CONFLICT (user_id) DO UPDATE
-         SET lavozim = EXCLUDED.lavozim, tg_user = EXCLUDED.tg_user,
-             qabul_vaqti = EXCLUDED.qabul_vaqti`,
-      [userId, d.lavozim, d.tg_user, d.qabul_vaqti]
+         SET lavozim = EXCLUDED.lavozim, tg_user = EXCLUDED.tg_user`,
+      [userId, d.lavozim, d.tg_user]
+    );
+  } else if (role === 'tyutor' && d.guruhlar.length) {
+    await client.query(
+      'INSERT INTO tyutor_guruh (tyutor_id, guruh) SELECT $1, unnest($2::varchar[])',
+      [userId, d.guruhlar]
     );
   }
 }
@@ -123,4 +132,39 @@ async function countByRole() {
   return Object.fromEntries(r.rows.map((x) => [x.role, x.soni]));
 }
 
-module.exports = { list, findById, findByLogin, create, update, setStatus, remove, countByRole };
+// Qabul qiladigan faol xodimlar (select'lar uchun)
+async function receivers(roles) {
+  const r = await db.query(
+    `SELECT id, ism, familiya, ochestva, role FROM users
+      WHERE role = ANY($1) AND status ORDER BY familiya, ism`,
+    [roles]
+  );
+  return r.rows;
+}
+
+// Talabaning guruhiga biriktirilgan tyutor(lar)
+async function tyutorlari(studentId) {
+  const r = await db.query(
+    `SELECT u.id, u.ism, u.familiya, u.ochestva, u.phone
+       FROM student_info s
+       JOIN tyutor_guruh g ON lower(btrim(g.guruh)) = lower(btrim(s.guruh))
+       JOIN users u        ON u.id = g.tyutor_id AND u.status AND u.role = 'tyutor'
+      WHERE s.user_id = $1
+      ORDER BY u.familiya, u.ism`,
+    [studentId]
+  );
+  return r.rows;
+}
+
+module.exports = {
+  list,
+  findById,
+  findByLogin,
+  create,
+  update,
+  setStatus,
+  remove,
+  countByRole,
+  receivers,
+  tyutorlari,
+};
